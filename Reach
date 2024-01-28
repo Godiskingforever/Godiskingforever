@@ -1,0 +1,34 @@
+# minecraft_hit.py
+
+from mcpi.minecraft import Minecraft
+from mcpi.vec3 import Vec3
+
+class MinecraftHit:
+    def __init__(self, host="localhost", port=4711):
+        self.mc = Minecraft.create(address=host, port=port)
+
+    def hit_player(self, player, target):
+        """Hit the target player from a distance."""
+        # Get player's position
+        player_pos = self.mc.entity.getPos(self.mc.getPlayerEntityId(player))
+        
+        # Get target player's position
+        target_pos = self.mc.entity.getPos(self.mc.getPlayerEntityId(target))
+        
+        # Calculate the vector between the players
+        hit_vector = target_pos - player_pos
+        # Calculate the direction vector (normalized)
+        direction = hit_vector.normalize()
+        # Multiply the direction by the desired distance (15 blocks in this case)
+        hit_position = player_pos + direction * 15
+        
+        # Hit the target player at the calculated position
+        self.mc.events.emitBlockHit(hit_position)
+
+# Example usage
+if __name__ == "__main__":
+    hit_module = MinecraftHit()
+    attacker = "Attacker"
+    target = "Target"
+    hit_module.hit_player(attacker, target)
+    print(f"{attacker} hits {target} from a distance of 15 blocks.")
